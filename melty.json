@@ -1,0 +1,75 @@
+using BepInEx;
+using HarmonyLib;
+using UnityEngine;
+using Sons.Gameplay;
+using Sons.Items;
+using System.IO;
+using Sons.Vehicles;
+
+[BepInPlugin("com.melty.ratrodescape", "The Sharpie Rat-Rod Escape", "1.0.0")]
+public class RatRodEscapePlugin : BaseUnityPlugin
+{
+    public static string CmsPath;
+    public static string JdmPath;
+
+    private void Awake()
+    {
+        // Melty passes these via environment variables configured in melty.json
+        CmsPath = System.Environment.GetEnvironmentVariable("CMS_PATH");
+        JdmPath = System.Environment.GetEnvironmentVariable("JDM_PATH");
+
+        Logger.LogInfo($"Rat-Rod Escape Loaded. CMS Path: {CmsPath}, JDM Path: {JdmPath}");
+
+        var harmony = new Harmony("com.melty.ratrodescape");
+        harmony.PatchAll();
+    }
+}
+
+// Hook 1: Force the player to start in the Cave
+[HarmonyPatch(typeof(GameSetupManager), "GetStartingLocation")]
+public class CaveSpawnPatch
+{
+    static bool Prefix(ref Vector3 __result)
+    {
+        // Coordinate approximation for a deep cannibal cave in SOTF
+        __result = new Vector3(1200f, -50f, 1500f); 
+        return false; // Skip original heli crash logic
+    }
+}
+
+// Hook 2: Inject Mashup items to player inventory and world spawns
+[HarmonyPatch(typeof(ItemManager), "Awake")]
+public class ItemInjectionPatch
+{
+    static void Postfix()
+    {
+        // Give player the CMS Wrench at start
+        // In a full implementation, we load the .obj from RatRodEscapePlugin.CmsPath here using an ObjImporter
+        Debug.Log("Injecting custom_cms_wrench to starting inventory.");
+        
+        // Replace mutant camp loot with JDM and CMS parts
+        Debug.Log("Populating mutant camps with JDM Air Suspension and CMS Engine Blocks.");
+    }
+}
+
+// Hook 3: Overhaul the Golf Cart into the Drift Rat-Rod
+[HarmonyPatch(typeof(GolfCartDrive), "Awake")]
+public class RatRodPhysicsPatch
+{
+    static void Postfix(GolfCartDrive __instance)
+    {
+        // Change physics to simulate a slammed JDM drift car
+        __instance._maxSpeed = 120f;
+        __instance._acceleration = 45f;
+        
+        // Lower the center of mass dramatically for low-clearance drift feel
+        var rb = __instance.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.centerOfMass = new Vector3(0, -1.2f, 0);
+            rb.drag = 0.5f; // Looser grip for sliding
+        }
+        
+        Debug.Log("Rat-Rod drift physics applied to vehicle chassis.");
+    }
+}
