@@ -1,0 +1,6 @@
+[
+  { "id": "custom_cms_wrench", "name": "CMS Wrench", "type": "Tool", "assetSource": "cms2021", "assetName": "wrench_heavy.obj", "spawnWeight": 0, "startItem": true },
+  { "id": "custom_cms_engine", "name": "CMS Engine Block", "type": "CarPart", "assetSource": "cms2021", "assetName": "engine_v8.obj", "spawnWeight": 0.2, "startItem": false },
+  { "id": "custom_jdm_suspension", "name": "JDM Air Suspension", "type": "CarPart", "assetSource": "jdm", "assetName": "suspension_low.obj", "spawnWeight": 0.3, "startItem": false },
+  { "id": "custom_jdm_chassis", "name": "Stripped Rat-Rod Chassis", "type": "VehicleBase", "assetSource": "jdm", "assetName": "chassis_r33.obj", "spawnWeight": 1.0, "startItem": false, "spawnLocation": "cave_exit_4" }
+]
